@@ -28,8 +28,7 @@ class Vacinacao():
                 for key, value in filtro.items():
                     arquivo_nome_parte += str(key) + '_' + str(value) + '_'
             else:
-                print(f'O argumento filtro deve ser um dicionário. Foi recebido {type(filtro)}')
-                exit()
+                raise Exception(f'O argumento filtro deve ser um dicionário. Foi recebido {type(filtro)}')
 
         pagina = 1
         primeira_pagina = 1
@@ -41,8 +40,7 @@ class Vacinacao():
             resposta = r.json()
             hits = resposta['hits']['hits']
             if not hits or len(hits) == 0:
-                print(f'Nenhum valor retornado para o filtro {filtro}')
-                exit()
+                raise Exception(f'Nenhum valor retornado para o filtro {filtro}')
             df = pd.json_normalize(resposta, ['hits', 'hits'])
             df = self._arruma_colunas(df)
             memory_usage = df.memory_usage().sum() / (1024 ** 2)
@@ -77,10 +75,9 @@ class Vacinacao():
                         hits = None
                     pagina += 1
                 else:
-                    print(f'Erro obtendo página {pagina}: {r.text}')
-                    break
+                    raise Exception(f'Erro obtendo página {pagina}: {r.text}')
         else:
-            print(f'Erro obtendo página {pagina}: {r.text}')
+            raise Exception(f'Erro obtendo página {pagina}: {r.text}')
 
         if not estouro_memoria and resposta_ok:
             arquivo = arquivo_nome_parte + 'PAGINA_' + str(primeira_pagina) + '_A_' + str(
